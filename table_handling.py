@@ -1,3 +1,10 @@
+def print_table(cursor):
+    result = cursor.fetchall()
+    for row in result:
+        print(row)
+        print("\n")
+
+
 def create_customer(cursor, connection):
     customer_number = 1
     cursor.execute("SELECT MAX(CNO) FROM CUSTOMERS;")
@@ -13,10 +20,11 @@ def create_customer(cursor, connection):
         pno = "NULL"
     email = input("Enter customer email:\n")
     password = input("Enter customer password:\n")
+    balance = 0
 
     cursor.execute(
-        "INSERT INTO CUSTOMERS VALUES ('{}', '{}', '{}', '{}', '{}', '{}');".format(
-            customer_number, name, address, pno, email, password
+        "INSERT INTO CUSTOMERS VALUES ('{}', '{}', '{}', '{}', '{}', '{}', '{}');".format(
+            customer_number, name, address, pno, email, password, balance
         )
     )
 
@@ -44,3 +52,69 @@ def create_item(cursor, connection):
     )
 
     connection.commit()
+
+
+def search_item(item_name, cursor, identifier):
+
+    if identifier not in ("name, type"):
+        # error
+        return
+
+    cursor.execute(
+        "SELECT * FROM ITEMS WHERE {} LIKE '%{}%';".format(identifier, item_name)
+    )
+
+    result = cursor.fetchall()
+
+    for row in result:
+
+        stock = "In stock"
+
+        if int(row[3]) < 0:
+            # Not in stock
+            stock = "Not in stock"
+
+        print()
+        print("Item number: ", row[0])
+        print("Name: ", row[1])
+        print("Price (in ₹): ", row[2])
+        print("Stock: ", stock)
+        print("Type: ", row[4])
+        print("-" * 50)
+
+
+def view_table(cursor, name):
+    """
+    Utility function to view any particular table and its entries.
+    """
+    # cursor.execute("DESC {}".format(name))
+    # print_table(cursor)
+    cursor.execute("SELECT * FROM %s;" % name)
+    print_table(cursor)
+
+
+def buy_item(item_number, cursor):
+    query = "SELECT * FROM ITEMS WHERE INO = {}".format(item_number)
+    cursor.execute(query)
+    result = cursor.fetchone()
+    print("Name: ", result[1])
+    print("Cost: ", result[2])
+    print("Type: ", result[4])
+
+    confirmation = input("Please confirm if this is the product you want to buy:\n (Y)")
+    if confirmation.lower() not in ("yes", "y"):
+        return
+
+    quantity = int(input("Please enter the quantity you want to purchase:\n"))
+    stock = result[3]
+    while quantity > stock:
+        print("Stock is only {}. Enter less quantity.".format(stock))
+        quantity = int(input("Please enter the quantity you want to purchase:\n"))
+
+    customer_number = int(input("Enter customer number:\n"))
+    balance = 0
+    cursor.execute(
+        "SELECT BALANCE FROM CUSTOMERS WHERE CNO = {};".format(customer_number)
+    )
+    cursor.fetchone()
+    print(result)

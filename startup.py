@@ -59,7 +59,7 @@ def create_tables(cursor):
     )
 
     cursor.execute(
-        "CREATE TABLE IF NOT EXISTS CUSTOMERS (CNO INT(5) PRIMARY KEY, NAME VARCHAR(20) NOT NULL, ADDRESS VARCHAR(50) NOT NULL, PNO CHAR(10), EMAIL VARCHAR(30) UNIQUE, PASSWORD VARCHAR(50) NOT NULL);"
+        "CREATE TABLE IF NOT EXISTS CUSTOMERS (CNO INT(5) PRIMARY KEY, NAME VARCHAR(20) NOT NULL, ADDRESS VARCHAR(50) NOT NULL, PNO CHAR(10), EMAIL VARCHAR(30) UNIQUE, PASSWORD VARCHAR(50) NOT NULL, BALANCE INT(6) NOT NULL);"
     )
 
 
@@ -70,27 +70,3 @@ def create_database(cursor):
     cursor.execute("CREATE DATABASE IF NOT EXISTS ECOM;")
     cursor.execute("USE ECOM;")
     create_tables(cursor)
-
-
-def view_table(cursor, name):
-    """
-    Utility function to view any particular table and its entries.
-    """
-    cursor.execute("DESC {}".format(name))
-    output = cursor.fetchall()
-    print(output)
-    cursor.execute("SELECT * FROM %s;" % name)
-    output = cursor.fetchall()
-    print(output)
-
-
-def ask_for_admin():
-    admin_password = input("Enter admin password:\n")
-
-    saved_password = read_password(2)
-    if admin_password == saved_password:
-        print("Logged in as admin successfully.")
-        return True
-    else:
-        print("Wrong password.")
-        return False

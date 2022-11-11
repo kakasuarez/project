@@ -37,3 +37,15 @@ def read_password(type):
 
     password = password.rstrip()
     return password
+
+
+def ask_for_admin():
+    admin_password = input("Enter admin password:\n")
+
+    saved_password = read_password(2)
+    if admin_password == saved_password:
+        print("Logged in as admin successfully.")
+        return True
+    else:
+        print("Wrong password.")
+        return False
