@@ -1,4 +1,16 @@
+"""
+File which deals with all the functions for manipulating and storing the passwords.
+There are two passwords to be stored:
+First is the database password for MySQL.
+Second is the admin password.
+The passwords are stored in the binary file named pass.bin.
+"""
+
+
+# The name of the password file.
 password_file = "pass.bin"
+
+# Maximum length of both passwords.
 max_size_of_pass = 30
 
 
@@ -40,6 +52,9 @@ def read_password(type):
 
 
 def ask_for_admin():
+    """
+    Function which logs in the user as admin.
+    """
     admin_password = input("Enter admin password:\n")
 
     saved_password = read_password(2)
