@@ -1,4 +1,16 @@
+"""
+File which deals with all the procedures related to the MySQL database.
+The database contains the details of the customers and items.
+"""
+
+from datetime import date
+from file_handling import add_to_file
+
+
 def print_table(cursor):
+    """
+    Function that prints the result of a query.
+    """
     result = cursor.fetchall()
     for row in result:
         print(row)
@@ -6,6 +18,9 @@ def print_table(cursor):
 
 
 def create_customer(cursor, connection):
+    """
+    Function that creates a new customer.
+    """
     customer_number = 1
     cursor.execute("SELECT MAX(CNO) FROM CUSTOMERS;")
     a = cursor.fetchone()
@@ -33,6 +48,9 @@ def create_customer(cursor, connection):
 
 
 def create_item(cursor, connection):
+    """
+    Function that creates a new item.
+    """
     item_number = 1
     cursor.execute("SELECT MAX(INO) FROM ITEMS;")
     a = cursor.fetchone()
@@ -55,9 +73,12 @@ def create_item(cursor, connection):
 
 
 def search_item(item_name, cursor, identifier):
+    """
+    Function which searches for items on the basis of either name or type columns.
+    """
 
     if identifier not in ("name, type"):
-        # error
+        # Error, this should not happen.
         return
 
     cursor.execute(
@@ -94,11 +115,15 @@ def view_table(cursor, name):
 
 
 def buy_item(item_number, cursor):
+    """
+    Function which handles the purchase of an item by a customer.
+    """
     query = "SELECT * FROM ITEMS WHERE INO = {}".format(item_number)
     cursor.execute(query)
     result = cursor.fetchone()
+    cost = int(result[2])
     print("Name: ", result[1])
-    print("Cost: ", result[2])
+    print("Cost: ", cost)
     print("Type: ", result[4])
 
     confirmation = input("Please confirm if this is the product you want to buy:\n (Y)")
@@ -112,9 +137,101 @@ def buy_item(item_number, cursor):
         quantity = int(input("Please enter the quantity you want to purchase:\n"))
 
     customer_number = int(input("Enter customer number:\n"))
-    balance = 0
     cursor.execute(
-        "SELECT BALANCE FROM CUSTOMERS WHERE CNO = {};".format(customer_number)
+        "SELECT BALANCE, PASSWORD FROM CUSTOMERS WHERE CNO = {};".format(
+            customer_number
+        )
     )
-    cursor.fetchone()
-    print(result)
+    result = cursor.fetchone()
+    balance = int(result[0])
+    actual_password = result[1]
+    if balance < quantity * cost:
+        print("Insufficient balance.")
+        return
+    entered_password = input("Enter customer password:\n")
+    if entered_password != actual_password:
+        print("Wrong password.")
+        return
+    l = [customer_number, item_number, quantity, str(date.today())]
+    add_to_file(l)
+    stock -= quantity
+    cursor.execute(
+        "UPDATE ITEMS SET STOCK = {} WHERE INO = {};".format(stock, item_number)
+    )
+    print("Purchased successfully!")
+
+
+def view_customer_details(customer_number, cursor):
+    """
+    Function to print customer details for admin.
+    """
+    cursor.execute("SELECT * FROM CUSTOMERS WHERE CNO={};".format(customer_number))
+    result = cursor.fetchone()
+    print("Name: ", result[1])
+    print("Address: ", result[2])
+    print("Phone number: ", result[3])
+    print("E-mail: ", result[4])
+
+
+def add_balance(bal, customer_number, cursor, connection):
+    """
+    Function to add balance in any given customer's account.
+    """
+    new = 0
+    query = cursor.execute(
+        "SELECT BALANCE FROM CUSTOMERS WHERE CNO={};".format(customer_number)
+    )
+    cursor.execute(query)
+    result = cursor.fetchone()
+    new = int(result[0]) + bal
+    query1 = "UPDATE CUSTOMERS SET BALANCE = {} WHERE CNO={};".format(
+        new, customer_number
+    )
+    cursor.execute(query1)
+    connection.commit()
+
+
+def edit_customer_details(customer_number, cursor):
+    """
+    Function to edit any customer's details.
+    """
+    new = 0
+    # To print details of customer whose details are to be edited
+    view_customer_details(customer_number, cursor)
+    ch = "y"
+    while ch.lower() == "y":
+        print("\n 1.Name\n 2.Address\n 3.Phone Number:\n 4. E-mail\n")
+        x = int(input("Enter detail to be edited:"))
+        if x == 1:
+            new = input("Enter new name:\n")
+            cursor.execute(
+                "UPDATE CUSTOMERS SET NAME='{}' WHERE CNO={};".format(
+                    new, customer_number
+                )
+            )
+        elif x == 2:
+            new = input("Enter new address:\n")
+            cursor.execute(
+                "UPDATE CUSTOMERS SET ADDRESS='{}' WHERE CNO={};".format(
+                    new, customer_number
+                )
+            )
+        elif x == 3:
+            new = input("Enter new phone number:\n")
+            cursor.execute(
+                "UPDATE CUSTOMERS SET PNO='{}' WHERE CNO={};".format(
+                    new, customer_number
+                )
+            )
+
+        elif x == 4:
+            new = input("Enter new email:\n")
+            cursor.execute(
+                "UPDATE CUSTOMERS SET EMAIL='{}' WHERE CNO={};".format(
+                    new, customer_number
+                )
+            )
+
+        else:
+            print("Incorrect choice")
+        ch = input("Do you want to edit more details?(y/n)")

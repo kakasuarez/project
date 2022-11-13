@@ -1,3 +1,9 @@
+"""
+File which should run on the first time of the starting of the project.
+It creates the necessary databases and tables and files.
+"""
+
+
 import mysql.connector as mysql
 import os
 from password_handling import (
@@ -6,6 +12,8 @@ from password_handling import (
     max_size_of_pass,
     write_password,
 )
+
+from file_handling import create_file
 
 
 def create_admin_account():
@@ -70,3 +78,4 @@ def create_database(cursor):
     cursor.execute("CREATE DATABASE IF NOT EXISTS ECOM;")
     cursor.execute("USE ECOM;")
     create_tables(cursor)
+    create_file()
