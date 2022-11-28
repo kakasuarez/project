@@ -73,7 +73,7 @@ while option != 0:
         item_number = int(
             input("Enter the item number of the item you want to purchase:\n")
         )
-        buy_item(item_number, cursor)
+        buy_item(item_number, cursor, connection)
 
     elif option == 4 and is_admin:
         name = input("Enter table name to view:\n")

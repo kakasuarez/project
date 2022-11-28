@@ -114,7 +114,7 @@ def view_table(cursor, name):
     print_table(cursor)
 
 
-def buy_item(item_number, cursor):
+def buy_item(item_number, cursor, connection):
     """
     Function which handles the purchase of an item by a customer.
     """
@@ -155,9 +155,16 @@ def buy_item(item_number, cursor):
     l = [customer_number, item_number, quantity, str(date.today())]
     add_to_file(l)
     stock -= quantity
+    new_balance = balance - (quantity * cost)
     cursor.execute(
         "UPDATE ITEMS SET STOCK = {} WHERE INO = {};".format(stock, item_number)
     )
+    cursor.execute(
+        "UPDATE CUSTOMERS SET BALANCE = {} WHERE CNO = {};".format(
+            new_balance, customer_number
+        )
+    )
+    connection.commit()
     print("Purchased successfully!")
 
 
