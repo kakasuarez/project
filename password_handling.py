@@ -30,8 +30,6 @@ def write_password(password):
     with open(password_file, "ab") as f:
         f.write(password)
 
-    return True
-
 
 def read_password(type):
     """
