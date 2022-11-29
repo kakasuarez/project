@@ -91,7 +91,7 @@ def search_item(item_name, cursor, identifier):
 
         stock = "In stock"
 
-        if int(row[3]) < 0:
+        if int(row[3]) <= 0:
             # Not in stock
             stock = "Not in stock"
 
@@ -130,8 +130,13 @@ def buy_item(item_number, cursor, connection):
     if confirmation.lower() not in ("yes", "y"):
         return
 
+    stock = int(result[3])
+    if not stock:
+        print("Item is not in stock. Please try again later.")
+        return
+    
     quantity = int(input("Please enter the quantity you want to purchase:\n"))
-    stock = result[3]
+
     while quantity > stock:
         print("Stock is only {}. Enter less quantity.".format(stock))
         quantity = int(input("Please enter the quantity you want to purchase:\n"))
@@ -242,3 +247,6 @@ def edit_customer_details(customer_number, cursor):
         else:
             print("Incorrect choice")
         ch = input("Do you want to edit more details?(y/n)")
+
+
+

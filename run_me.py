@@ -16,7 +16,7 @@ from table_handling import (
     edit_customer_details,
 )
 
-from file_handling import read_file
+from file_handling import read_file, get_monthly_revenue
 
 from password_handling import ask_for_admin
 
@@ -39,15 +39,24 @@ if choice == "Y":
     is_admin = ask_for_admin()
 
 
-print("1.Create customer 2.Search for item 3.Buy item")
+# print("1.Create customer 2.Search for item 3.Buy item")
 
-if is_admin:
-    print(
-        "4.View tables 5.Add item 6.Add Balance 7.View Customer details 8. Edit Customer details 9.View orders"
-    )
+# if is_admin:
+#     print(
+#         "4.View tables 5.Add item 6.Add Balance 7.View Customer details 8. Edit Customer details 9.View orders"
+#     )
 
-option = int(input("Enter your choice="))
+# option = int(input("Enter your choice="))
+option = 1
 while option != 0:
+
+    print("1.Create customer 2.Search for item 3.Buy item")
+    if is_admin:
+        print(
+            "4.View tables 5.Add item 6.Add Balance 7.View Customer details 8. Edit Customer details 9.View orders 10.View monthly revenue"
+        )
+    option = int(input("Enter your choice (0 for exit):\n"))
+
     if option == 1:
         create_customer(cursor, connection)
 
@@ -95,15 +104,11 @@ while option != 0:
 
     elif option == 8 and is_admin:
         customer_number = input(
-            "Enter the customer number of customer whose details you want to edit"
+            "Enter the customer number of customer whose details you want to edit:\n"
         )
         edit_customer_details(customer_number, cursor)
     elif option == 9 and is_admin:
-        read_file()
+        read_file(cursor)
 
-    print("1.Create customer 2.Search for item 3.Buy item")
-    if is_admin:
-        print(
-            "4.View tables 5.Add item 6.Add Balance 7.View Customer details 8. Edit Customer details 9.View orders"
-        )
-    option = int(input("Enter your choice (0 for exit):\n"))
+    elif option == 10 and is_admin:
+        get_monthly_revenue(cursor)
