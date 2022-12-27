@@ -33,7 +33,14 @@ def create_customer(cursor, connection):
     pno = input("Enter customer phone number:\n")
     if not pno:
         pno = "NULL"
+    elif len(pno) != 10:
+        while len(pno) != 10:
+            print("Enter 10 digit phone number.")
+            pno = input("Enter customer phone number:\n")
     email = input("Enter customer email:\n")
+    while "@" not in email:
+        print("Enter valid email.")
+        email = input("Enter customer email:\n")
     password = input("Enter customer password:\n")
     balance = 0
 
@@ -134,7 +141,7 @@ def buy_item(item_number, cursor, connection):
     if not stock:
         print("Item is not in stock. Please try again later.")
         return
-    
+
     quantity = int(input("Please enter the quantity you want to purchase:\n"))
 
     while quantity > stock:
@@ -249,4 +256,14 @@ def edit_customer_details(customer_number, cursor):
         ch = input("Do you want to edit more details?(y/n)")
 
 
-
+def add_stock(stock, item_number, cursor, connection):
+    cursor.execute("SELECT STOCK FROM ITEMS WHERE INO={};".format(item_number))
+    old_stock = cursor.fetchone()[0]
+    new_stock = stock + old_stock
+    cursor.execute(
+        "UPDATE ITEMS SET STOCK={stock} WHERE INO={item};".format(
+            stock=new_stock, item=item_number
+        )
+    )
+    connection.commit()
+    print("Added successfully. New stock is {}.".format(new_stock))

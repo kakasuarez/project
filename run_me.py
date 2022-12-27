@@ -14,6 +14,7 @@ from table_handling import (
     add_balance,
     view_customer_details,
     edit_customer_details,
+    add_stock,
 )
 
 from file_handling import read_file, get_monthly_revenue
@@ -38,22 +39,13 @@ if choice == "N":
 if choice == "Y":
     is_admin = ask_for_admin()
 
-
-# print("1.Create customer 2.Search for item 3.Buy item")
-
-# if is_admin:
-#     print(
-#         "4.View tables 5.Add item 6.Add Balance 7.View Customer details 8. Edit Customer details 9.View orders"
-#     )
-
-# option = int(input("Enter your choice="))
 option = 1
 while option != 0:
 
-    print("1.Create customer 2.Search for item 3.Buy item")
+    print("1.Create customer\n2.Search for item\n3.Buy item")
     if is_admin:
         print(
-            "4.View tables 5.Add item 6.Add Balance 7.View Customer details 8. Edit Customer details 9.View orders 10.View monthly revenue"
+            "4.View tables\n5.Add item\n6.Add Balance\n7.View Customer details\n8.Edit customer details\n9.View orders\n10.View monthly revenue\n11.Add stock"
         )
     option = int(input("Enter your choice (0 for exit):\n"))
 
@@ -112,3 +104,8 @@ while option != 0:
 
     elif option == 10 and is_admin:
         get_monthly_revenue(cursor)
+
+    elif option == 11 and is_admin:
+        item_number = int(input("Enter item number:\n"))
+        stock = int(input("Enter additional stock:\n"))
+        add_stock(stock, item_number, cursor, connection)
