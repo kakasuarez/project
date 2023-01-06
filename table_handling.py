@@ -129,7 +129,8 @@ def buy_item(item_number, cursor, connection):
     cursor.execute(query)
     result = cursor.fetchone()
     cost = int(result[2])
-    print("Name: ", result[1])
+    name = result[1]
+    print("Name: ", name)
     print("Cost: ", cost)
     print("Type: ", result[4])
 
@@ -164,10 +165,24 @@ def buy_item(item_number, cursor, connection):
     if entered_password != actual_password:
         print("Wrong password.")
         return
-    l = [customer_number, item_number, quantity, str(date.today())]
+    amount = quantity * cost
+    today = str(date.today())
+    print("-" * 25)
+    print("Receipt".center(25))
+    print("E-commerce project".center(25))
+    print("Date: " + today)
+    print("Customer number: {}".format(customer_number))
+    print("Item: {}".format(name))
+    print("Cost: {}".format(cost))
+    print("Quantity: {}".format(quantity))
+    print("-" * 25)
+    print("Amount: {}".format(amount))
+    print("-" * 25)
+    input("Press enter to continue...")
+    l = [customer_number, item_number, quantity, today]
     add_to_file(l)
     stock -= quantity
-    new_balance = balance - (quantity * cost)
+    new_balance = balance - amount
     cursor.execute(
         "UPDATE ITEMS SET STOCK = {} WHERE INO = {};".format(stock, item_number)
     )
